@@ -6,6 +6,9 @@ let patrolLayer = null;
 
 const TOMTOM_KEY = "OLiJPFwlldEw398ZSUmRCKuAkUn3lLEb";
 
+// رابط الخادم النهائي
+const API = "https://amanai-26b5.onrender.com";
+
 /* ===========================
    INIT
 =========================== */
@@ -26,7 +29,6 @@ function setupThemeToggle() {
 
     const saved = localStorage.getItem("amanai-theme");
 
-    // الافتراضي: وضع نهاري (لا Dark)
     if (saved === "dark") {
         document.body.classList.add("dark-mode");
         btn.textContent = "☀️ وضع النهار";
@@ -62,10 +64,10 @@ function showMapMessage(msg) {
 }
 
 /* ===========================
-   🔥 تحليل الازدحام (محاكاة)
+   🔥 تحليل الازدحام
 =========================== */
 function detectTrafficAutomatically() {
-    fetch("http://127.0.0.1:8000/detect-traffic")
+    fetch(`${API}/detect-traffic`)
         .then(r => r.json())
         .then(res => {
             showMapMessage("🔥 " + res.msg);
@@ -77,7 +79,7 @@ function detectTrafficAutomatically() {
 }
 
 /* ===========================
-   🚦 طبقة المرور من TomTom
+   🚦 طبقة المرور
 =========================== */
 function toggleTrafficLayer() {
     if (trafficLayer) {
@@ -104,7 +106,7 @@ function toggleTrafficLayer() {
 }
 
 /* ===========================
-   🔴 طبقة الحوادث من TomTom
+   🔴 طبقة الحوادث
 =========================== */
 function toggleIncidentsLayer() {
     if (incidentsLayer) {
@@ -155,7 +157,7 @@ function toggleIncidentsLayer() {
    ⭐ الخريطة الحرارية
 =========================== */
 function loadHeatmap() {
-    fetch("http://127.0.0.1:8000/heatmap")
+    fetch(`${API}/heatmap`)
         .then(r => r.json())
         .then(data => {
             if (heatLayer) map.removeLayer(heatLayer);
@@ -188,10 +190,10 @@ function loadHeatmap() {
 }
 
 /* ===========================
-   🚔 تمركز الدوريات – نبضة Pulse
+   🚔 تمركز الدوريات
 =========================== */
 function forecastPatrolZones() {
-    fetch("http://127.0.0.1:8000/patrol-forecast")
+    fetch(`${API}/patrol-forecast`)
         .then(r => r.json())
         .then(zones => {
 
@@ -231,7 +233,7 @@ function forecastPatrolZones() {
 }
 
 /* ===========================
-   تسجيل بلاغ يدوي
+   تسجيل بلاغ
 =========================== */
 function logIncident() {
     const body = {
@@ -242,7 +244,7 @@ function logIncident() {
         lng: Number(manual_lng.value)
     };
 
-    fetch("http://127.0.0.1:8000/save-incident", {
+    fetch(`${API}/save-incident`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body)
@@ -255,7 +257,7 @@ function logIncident() {
         loadHeatmap();
     })
     .catch(() => {
-        log_output.innerHTML = "⚠ فشل حفظ البلاغ – تأكد من تشغيل الخادم";
+        log_output.innerHTML = "⚠ فشل حفظ البلاغ";
     });
 }
 
@@ -263,7 +265,7 @@ function logIncident() {
    عرض البلاغات
 =========================== */
 function loadIncidents() {
-    fetch("http://127.0.0.1:8000/incidents")
+    fetch(`${API}/incidents`)
         .then(r => r.json())
         .then(data => {
             const tbody = document.getElementById("incident_table");
@@ -295,7 +297,7 @@ function loadIncidents() {
    حذف بلاغ
 =========================== */
 function deleteIncident(id) {
-    fetch("http://127.0.0.1:8000/delete-incident", {
+    fetch(`${API}/delete-incident`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id })
@@ -307,10 +309,10 @@ function deleteIncident(id) {
 }
 
 /* ===========================
-   مسح كل البلاغات
+   مسح البلاغات
 =========================== */
 function clearIncidents() {
-    fetch("http://127.0.0.1:8000/clear-incidents", {
+    fetch(`${API}/clear-incidents`, {
         method: "POST"
     }).then(() => {
         loadIncidents();
@@ -320,17 +322,17 @@ function clearIncidents() {
 }
 
 /* ===========================
-   تصدير PDF
+   PDF
 =========================== */
 function exportPDF() {
-    window.open("http://127.0.0.1:8000/export-pdf", "_blank");
+    window.open(`${API}/export-pdf`, "_blank");
 }
 
 /* ===========================
    Dashboard Stats
 =========================== */
 function updateDashboardStats() {
-    fetch("http://127.0.0.1:8000/dashboard-stats")
+    fetch(`${API}/dashboard-stats`)
         .then(r => r.json())
         .then(s => {
             stat_total.innerText = s.total;
@@ -342,7 +344,7 @@ function updateDashboardStats() {
 }
 
 /* ===========================
-   Charts (نص أسود)
+   Charts
 =========================== */
 let barChart, pieChart;
 
@@ -404,7 +406,7 @@ function updateCharts(data) {
                     grid: { display: false }
                 },
                 y: {
-                    beginAtZero: true,
+                    beginAtZero: true;
                     ticks: { color: "#000000" },
                     grid: { color: "#ddd" }
                 }

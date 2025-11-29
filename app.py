@@ -14,9 +14,21 @@ RISK_MAP = {0: "منخفض", 1: "متوسط", 2: "مرتفع"}
 
 app = FastAPI()
 
+# ============================
+# CORS — مهم لربط الواجهة الأمامية
+# ============================
+ALLOWED_ORIGINS = [
+    "https://amanai-frontend.onrender.com",
+    "https://amanai-frontend.onrender.com/",
+    "http://localhost:5500",
+    "http://127.0.0.1:5500",
+    "*"
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -48,13 +60,11 @@ def init_db():
     conn.commit()
     conn.close()
 
-
 init_db()
 
 # ============================
 # نماذج البيانات
 # ============================
-
 
 class PredictInput(BaseModel):
     lat: float
@@ -63,7 +73,6 @@ class PredictInput(BaseModel):
     hour: int
     traffic: int
 
-
 class IncidentManual(BaseModel):
     incident_type: str
     observed_risk: str
@@ -71,20 +80,16 @@ class IncidentManual(BaseModel):
     lat: float
     lng: float
 
-
 class DeleteInput(BaseModel):
     id: int
-
 
 # ============================
 # دوال مساعدة
 # ============================
 
-
 def risk_to_traffic_num(observed: str) -> int:
     m = {"منخفض": 0, "متوسط": 1, "مرتفع": 2}
     return m.get(observed, 1)
-
 
 def make_recommendation(risk: str) -> str:
     if risk == "مرتفع":
@@ -93,11 +98,9 @@ def make_recommendation(risk: str) -> str:
         return "⚠️ متابعة الموقع خلال 10 دقائق والاستعداد للتصعيد."
     return "✓ الوضع مستقر ولا يتطلب إجراء فوري."
 
-
 # ============================
-# 1) API التنبؤ (يُستخدم داخليًا فقط)
+# 1) API التنبؤ
 # ============================
-
 
 @app.post("/predict")
 def predict(data: PredictInput):
@@ -112,11 +115,9 @@ def predict(data: PredictInput):
         "recommendation": make_recommendation(risk),
     }
 
-
 # ============================
-# 2) حفظ بلاغ يدوي (مع استخدام AI في الخلفية)
+# 2) حفظ بلاغ يدوي
 # ============================
-
 
 @app.post("/save-incident")
 def save_manual(data: IncidentManual):
@@ -124,9 +125,7 @@ def save_manual(data: IncidentManual):
     day = now.weekday()
     hour = now.hour
     traffic_num = risk_to_traffic_num(data.observed_risk)
-    traffic_label = data.observed_risk  # نخزنها نصًا
 
-    # تنبؤ AI بالخطر المتوقَّع
     X = [[data.lat, data.lng, day, hour, traffic_num]]
     pred = int(model.predict(X)[0])
     predicted_risk = RISK_MAP.get(pred, "غير محدد")
@@ -147,7 +146,7 @@ def save_manual(data: IncidentManual):
             data.lng,
             day,
             hour,
-            traffic_label,
+            data.observed_risk,
             predicted_risk,
             data.observed_risk,
             data.incident_type,
@@ -160,11 +159,9 @@ def save_manual(data: IncidentManual):
 
     return {"status": "saved"}
 
-
 # ============================
 # 3) قائمة البلاغات
 # ============================
-
 
 @app.get("/incidents")
 def get_incidents():
@@ -174,11 +171,9 @@ def get_incidents():
     conn.close()
     return [dict(r) for r in rows]
 
-
 # ============================
 # 4) حذف بلاغ واحد
 # ============================
-
 
 @app.post("/delete-incident")
 def delete_incident(data: DeleteInput):
@@ -188,11 +183,9 @@ def delete_incident(data: DeleteInput):
     conn.close()
     return {"status": "deleted"}
 
-
 # ============================
 # 5) مسح جميع البلاغات
 # ============================
-
 
 @app.post("/clear-incidents")
 def clear_incidents():
@@ -202,11 +195,9 @@ def clear_incidents():
     conn.close()
     return {"status": "cleared"}
 
-
 # ============================
-# 6) إحصائيات الـ Dashboard
+# 6) إحصائيات Dashboard
 # ============================
-
 
 @app.get("/dashboard-stats")
 def dashboard_stats():
@@ -227,11 +218,9 @@ def dashboard_stats():
 
     return {"total": total, "high": high, "last_hour": last_hour, "high_pct": pct}
 
-
 # ============================
-# 7) Heatmap من البلاغات
+# 7) Heatmap
 # ============================
-
 
 @app.get("/heatmap")
 def heatmap():
@@ -242,8 +231,6 @@ def heatmap():
 
     points = []
     for r in rows:
-        if r["lat"] is None or r["lng"] is None:
-            continue
         if r["predicted_risk"] == "مرتفع":
             w = 3
         elif r["predicted_risk"] == "متوسط":
@@ -254,11 +241,9 @@ def heatmap():
 
     return {"points": points}
 
-
 # ============================
 # 8) طبقة المرور (Hotspots)
 # ============================
-
 
 @app.get("/traffic-hotspots")
 def traffic_hotspots():
@@ -270,7 +255,6 @@ def traffic_hotspots():
     conn.close()
 
     if not rows:
-        # نقاط افتراضية حول الحرم
         base = (24.47, 39.61)
         return [
             {"lat": base[0] + 0.01, "lng": base[1], "level": "منخفض"},
@@ -278,7 +262,6 @@ def traffic_hotspots():
             {"lat": base[0] - 0.01, "lng": base[1] - 0.01, "level": "مرتفع"},
         ]
 
-    # تجميع بسيط حسب الإحداثيات (تقريب لأربع منازل عشرية)
     buckets = {}
     for r in rows:
         key = (round(r["lat"], 4), round(r["lng"], 4))
@@ -302,20 +285,12 @@ def traffic_hotspots():
 
     return result
 
-
 # ============================
-# 9) تحليل الازدحام التلقائي (يضيف بلاغات AI)
+# 9) تحليل الازدحام التلقائي
 # ============================
-
 
 @app.get("/detect-traffic")
 def detect_traffic():
-    """
-    الزر 🔥 تحليل الازدحام:
-    - ينشئ نقاط عشوائية حول المدينة
-    - يمررها للنموذج
-    - يسجل البلاغات في قاعدة البيانات كمصدر AI
-    """
     base_lat, base_lng = 24.47, 39.61
     now = datetime.now()
     day = now.weekday()
@@ -351,7 +326,7 @@ def detect_traffic():
                 hour,
                 traffic_label,
                 risk,
-                risk,  # observed نفس المتوقَّع في الحالات التلقائية
+                risk,
                 "تحليل تلقائي للازدحام",
                 rec,
                 "AI",
@@ -363,18 +338,12 @@ def detect_traffic():
 
     return {"msg": "تم تحليل الازدحام وإضافة بلاغات متوقعة جديدة."}
 
-
 # ============================
 # 10) تمركز الدوريات
 # ============================
 
-
 @app.get("/patrol-forecast")
 def patrol_forecast():
-    """
-    يعيد أفضل 3 مواقع مرشحة لتمركز الدوريات
-    بناءً على البلاغات ذات الخطورة العالية.
-    """
     conn = sqlite3.connect("incidents.db")
     conn.row_factory = sqlite3.Row
     rows = conn.execute(
@@ -383,14 +352,12 @@ def patrol_forecast():
     conn.close()
 
     if not rows:
-        # مواقع افتراضية
         return [
             {"lat": 24.47, "lng": 39.61},
             {"lat": 24.48, "lng": 39.60},
             {"lat": 24.46, "lng": 39.62},
         ]
 
-    # نختار 3 نقاط مميزة (أو أقل إن لم تتوفر)
     unique = []
     seen = set()
     for r in rows:
@@ -404,15 +371,12 @@ def patrol_forecast():
 
     return unique
 
-
 # ============================
-# 11) تصدير PDF (نسخة بسيطة مؤقتًا)
+# 11) تصدير PDF (مؤقت)
 # ============================
-
 
 @app.get("/export-pdf")
 def export_pdf():
-    # حالياً نرجع HTML بسيط؛ لاحقاً ممكن نستخدم مكتبة لتوليد PDF حقيقي
     html = """
     <html lang="ar" dir="rtl">
     <head><meta charset="utf-8"><title>تقرير AmanAI</title></head>

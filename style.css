@@ -1,0 +1,496 @@
+/* ----------------------------------------------------
+   AmanAI – ثيم أبشر (أخضر × أبيض) – واجهة حكومية رسمية
+-----------------------------------------------------*/
+
+/* ====================== */
+/*     ROOT COLORS        */
+/* ====================== */
+:root {
+    --bg: #FFFFFF;                    /* الخلفية العامة بيضاء */
+    --card: #F5F7F8;                  /* خلفية صناديق */
+    --text: #1A1A1A;                  /* نص داكن */
+    --text-light: #4A4A4A;            /* نص رمادي */
+
+    --primary: #0A9B50;               /* أخضر أبشر الأساسي */
+    --primary-light: #31C16B;         /* أخضر فاتح */
+    --primary-hover: #087C40;         /* داكن */
+    --primary-bg: #E6F7EE;            /* أخضر باهت للخلفيات */
+
+    --border: #D6D6D6;                /* حدود فاتحة */
+
+    --success: #0A9B50;
+    --warning: #F5A623;
+    --danger: #E53935;
+
+    --map-height: 500px;
+}
+
+/* =====================================================
+   🌙 Dark Mode (أبشر ليلي)
+===================================================== */
+.dark-mode {
+    --bg: #0A0A0A;
+    --card: #111;
+    --text: #FFFFFF;
+    --text-light: #CCCCCC;
+
+    --primary: #0A9B50;
+    --primary-hover: #087C40;
+    --primary-bg: #0A9B5033;
+
+    --border: #2A2A2A;
+}
+
+/* ====================== */
+/*     GLOBAL RESET       */
+/* ====================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Tajawal", system-ui, sans-serif;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    direction: rtl;
+    padding-bottom: 40px;
+}
+
+h1, h2, h3, h4 {
+    font-weight: 700;
+}
+
+/* ====================== */
+/*        TOPBAR          */
+/* ====================== */
+.topbar {
+    width: 100%;
+    background: var(--primary);
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: white;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.18);
+}
+
+.topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.system-badge {
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: white;
+    color: var(--primary);
+    font-weight: 600;
+    border: 1px solid #fff;
+}
+
+.topbar-title {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.topbar-main {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.topbar-sub {
+    font-size: 12px;
+    opacity: 0.9;
+}
+
+/* زر تبديل الثيم */
+.theme-toggle {
+    background: white;
+    color: var(--primary);
+    border: none;
+    padding: 8px 18px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.theme-toggle:hover {
+    background: var(--primary-bg);
+}
+
+/* ====================== */
+/*       HEADER            */
+/* ====================== */
+.simple-header {
+    text-align: center;
+    margin-top: 26px;
+    margin-bottom: 22px;
+}
+
+.simple-header h1 {
+    font-size: 32px;
+    color: var(--primary);
+}
+
+.simple-header p {
+    color: var(--text-light);
+    font-size: 14px;
+}
+
+/* ====================== */
+/*         MAIN           */
+/* ====================== */
+.main {
+    padding: 0 26px;
+}
+
+/* ====================== */
+/*         PANELS         */
+/* ====================== */
+.panel {
+    background: var(--card);
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+}
+
+.panel-header {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    color: var(--primary);
+}
+
+/* ====================== */
+/*        KPI SECTION     */
+/* ====================== */
+.kpi-section {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.kpi-item {
+    background: white;
+    border: 1px solid var(--border);
+    padding: 16px;
+    border-radius: 14px;
+    text-align: center;
+}
+
+.kpi-item span {
+    display: block;
+    font-size: 26px;
+    color: var(--primary);
+    font-weight: 800;
+}
+
+/* ====================== */
+/*       GRID HELPERS     */
+/* ====================== */
+.grid-two {
+    display: grid;
+    grid-template-columns: 60% 40%;
+    gap: 22px;
+}
+
+.margin-top {
+    margin-top: 24px;
+}
+
+/* ====================== */
+/*        FORM GRID       */
+/* ====================== */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.form-grid label {
+    font-size: 13px;
+    color: var(--text-light);
+}
+
+.form-grid input,
+.form-grid select {
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: white;
+    color: var(--text);
+}
+
+.form-grid input:focus,
+.form-grid select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(10,155,80,0.3);
+}
+
+/* ====================== */
+/*      ACTION BUTTON     */
+/* ====================== */
+.action-btn {
+    background: var(--primary);
+    color: white;
+    padding: 10px 22px;
+    border: none;
+    border-radius: 999px;
+    margin-top: 16px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.25s;
+}
+
+.action-btn:hover {
+    background: var(--primary-hover);
+}
+
+.delete-btn {
+    background: var(--danger);
+    color: white;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+}
+
+/* ====================== */
+/*        MAP AREA        */
+/* ====================== */
+.map-wrapper {
+    background: var(--card);
+    padding: 18px;
+    border-radius: 18px;
+    border: 1px solid var(--border);
+}
+
+.map-subtitle {
+    font-size: 13px;
+    color: var(--text-light);
+    margin-bottom: 10px;
+}
+
+#map {
+    height: var(--map-height);
+    border-radius: 16px;
+    border: 2px solid var(--primary);
+    background: white;
+}
+
+/* Map notification */
+.map-notification {
+    position: absolute;
+    padding: 8px 14px;
+    background: var(--primary);
+    color: white;
+    border-radius: 999px;
+    top: 20px;
+    right: 40px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+/* أزرار التحكم بالخريطة */
+.traffic-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.traffic-controls button {
+    background: white;
+    color: var(--primary);
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    padding: 7px 14px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.traffic-controls button:hover {
+    background: var(--primary);
+    color: #fff;
+}
+
+/* ====================== */
+/*      LOG BOX           */
+/* ====================== */
+.log-box {
+    margin-top: 12px;
+    background: #FFFFFF;
+    border-radius: 10px;
+    padding: 10px;
+    border: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--success);
+}
+
+/* ====================== */
+/*         CHARTS         */
+/* ====================== */
+.chart-box {
+    background: white;
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+}
+
+.chart-box h3 {
+    margin-bottom: 10px;
+    font-size: 15px;
+    color: var(--primary);
+}
+
+.chart-box canvas {
+    width: 100% !important;
+    max-height: 320px !important;
+}
+
+/* ====================== */
+/*         TABLES         */
+/* ====================== */
+.table-section {
+    background: var(--card);
+    padding: 18px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+}
+
+.table-subtitle {
+    font-size: 12px;
+    color: var(--text-light);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+th {
+    background: var(--primary);
+    color: white;
+    padding: 10px;
+    font-size: 13px;
+}
+
+td {
+    padding: 10px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    color: #222;
+}
+
+.table-actions {
+    margin-top: 12px;
+    display: flex;
+    gap: 10px;
+}
+
+/* ====================== */
+/*       RESPONSIVE       */
+/* ====================== */
+@media (max-width: 1100px) {
+    .grid-two {
+        grid-template-columns: 1fr;
+    }
+
+    .kpi-section {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 720px) {
+    .kpi-section {
+        grid-template-columns: 1fr;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .main {
+        padding: 0 14px;
+    }
+
+    .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+}
+
+/* ===========================================================
+   ⭐ Pulse Effect for Heatmap Points
+=========================================================== */
+
+.pulse-marker {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    position: relative;
+}
+
+.pulse-marker::after {
+    content: "";
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    animation: pulse 2s infinite ease-out;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 0.9; }
+    60% { transform: scale(2.4); opacity: 0; }
+    100% { transform: scale(1); opacity: 0; }
+}
+
+.pulse-low { background: #22c55e; }
+.pulse-med { background: #f59e0b; }
+.pulse-high { background: #ef4444; }
+
+/* ===========================================================
+   🚔 دائرة تمركز الدوريات – تأثير نبضي Pulse
+=========================================================== */
+
+.patrol-pulse {
+    position: relative;
+    width: 22px;
+    height: 22px;
+    background: #0ea5e9;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 0 12px rgba(0,150,255,1);
+}
+
+.patrol-pulse::after {
+    content: "";
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    left: 0;
+    top: 0;
+    border-radius: 50%;
+    background: rgba(0,150,255,0.35);
+    animation: patrolPulse 1.8s infinite ease-out;
+}
+
+@keyframes patrolPulse {
+    0% { transform: scale(1); opacity: 0.9; }
+    60% { transform: scale(2.8); opacity: 0; }
+    100% { transform: scale(2.8); opacity: 0; }
+}

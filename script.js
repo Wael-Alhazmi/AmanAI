@@ -6,7 +6,7 @@ let patrolLayer = null;
 
 const TOMTOM_KEY = "OLiJPFwlldEw398ZSUmRCKuAkUn3lLEb";
 
-// رابط الخادم النهائي
+// رابط الخادم الأساسي (Render)
 const API = "https://amanai-26b5.onrender.com";
 
 /* ===========================
@@ -64,7 +64,7 @@ function showMapMessage(msg) {
 }
 
 /* ===========================
-   🔥 تحليل الازدحام
+   🔥 تحليل الازدحام (محاكاة)
 =========================== */
 function detectTrafficAutomatically() {
     fetch(`${API}/detect-traffic`)
@@ -79,7 +79,7 @@ function detectTrafficAutomatically() {
 }
 
 /* ===========================
-   🚦 طبقة المرور
+   🚦 طبقة المرور من TomTom
 =========================== */
 function toggleTrafficLayer() {
     if (trafficLayer) {
@@ -106,7 +106,7 @@ function toggleTrafficLayer() {
 }
 
 /* ===========================
-   🔴 طبقة الحوادث
+   🔴 طبقة الحوادث من TomTom
 =========================== */
 function toggleIncidentsLayer() {
     if (incidentsLayer) {
@@ -190,7 +190,7 @@ function loadHeatmap() {
 }
 
 /* ===========================
-   🚔 تمركز الدوريات
+   🚔 تمركز الدوريات – نبضة Pulse
 =========================== */
 function forecastPatrolZones() {
     fetch(`${API}/patrol-forecast`)
@@ -233,7 +233,7 @@ function forecastPatrolZones() {
 }
 
 /* ===========================
-   تسجيل بلاغ
+   تسجيل بلاغ يدوي
 =========================== */
 function logIncident() {
     const body = {
@@ -257,7 +257,7 @@ function logIncident() {
         loadHeatmap();
     })
     .catch(() => {
-        log_output.innerHTML = "⚠ فشل حفظ البلاغ";
+        log_output.innerHTML = "⚠ فشل حفظ البلاغ – تأكد من تشغيل الخادم";
     });
 }
 
@@ -309,7 +309,7 @@ function deleteIncident(id) {
 }
 
 /* ===========================
-   مسح البلاغات
+   مسح كل البلاغات
 =========================== */
 function clearIncidents() {
     fetch(`${API}/clear-incidents`, {
@@ -322,7 +322,7 @@ function clearIncidents() {
 }
 
 /* ===========================
-   PDF
+   تصدير PDF
 =========================== */
 function exportPDF() {
     window.open(`${API}/export-pdf`, "_blank");
@@ -406,7 +406,7 @@ function updateCharts(data) {
                     grid: { display: false }
                 },
                 y: {
-                    beginAtZero: true;
+                    beginAtZero: true,
                     ticks: { color: "#000000" },
                     grid: { color: "#ddd" }
                 }
